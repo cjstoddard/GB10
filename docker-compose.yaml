@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # Ollama service for running LLM models
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    restart: unless-stopped
+    networks:
+      - rag_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # Open WebUI for the frontend interface
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - open_webui_data:/app/backend/data
+    ports:
+      - "8080:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_AUTH=false
+      - ENABLE_RAG_WEB_SEARCH=true
+      - RAG_EMBEDDING_MODEL=nomic-embed-text
+      - CHUNK_SIZE=1500
+      - CHUNK_OVERLAP=100
+      - RAG_TOP_K=5
+      - PDF_EXTRACT_IMAGES=true
+      - ENABLE_RAG_LOCAL_WEB_FETCH=true
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - rag_network
+
+volumes:
+  ollama_data:
+    driver: local
+  open_webui_data:
+    driver: local
+
+networks:
+  rag_network:
+    driver: bridge
