@@ -15,6 +15,8 @@ A fully containerized Retrieval Augmented Generation (RAG) application using Ope
 
 1. **Make the build script executable:**
    ```bash
+   git clone https://github.com/cjstoddard/GB10.git
+   cd GB10/RAG
    chmod +x build.sh
    ```
 
@@ -24,7 +26,7 @@ A fully containerized Retrieval Augmented Generation (RAG) application using Ope
    ```
 
 3. **Access the application:**
-   - Open your browser to: `http://localhost:8080`
+   - Open your browser to: `http://localhost:8080` or `http://gb10-ip-address:8080`
    - No authentication required (can be enabled in docker-compose.yaml)
 
 ## Architecture
